@@ -2,19 +2,41 @@ import { Input } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/user";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const { user, setUser } = useUser();
   const navigate = useNavigate();
+  const validateEmail = (email) => {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(email);
+  };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async ()=>{
+   
+    if (!validateEmail(email)) {
+      setMessage("Please enter a valid email address");
+      setTimeout(()=>{
+        setMessage('')
+       },2000)
+      return;
+    }
+    if (password.length < 6) {
+      setMessage("Password must be at least 6 characters long");
+      setTimeout(()=>{
+        setMessage('')
+       },2000)
+      return;
+    }
     try {
-      const res = await axios.post("api/auth/login", { email, password });
+      const res = await axios.post("/api/auth/login", { email, password });
       alert('Login successful');
-      console.log(res.data.token); // Token from the server
+      console.log(res.data.token); 
       localStorage.setItem("token", res.data.token);
+      setUser(res.data?.user)
       navigate("/lessons");
     } catch (err) {
       alert(err?.response?.data ?? 'Invalid login credentials');
@@ -32,6 +54,7 @@ const Login = () => {
           <div className="bg-[#3B82F6] w-full mt-6 rounded-xl text-white text-[18px] text-center py-3 font-bold cursor-pointer hover:bg-[#2563EB]" onClick={handleSubmit}>
             Login
           </div>
+          <p className=" mt-2 text-amber-700">{message}</p>
         </div>
       </div>
     </div>

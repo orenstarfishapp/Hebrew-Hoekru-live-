@@ -113,7 +113,7 @@ app.post("/api/auth/register", async (req, res) => {
     await EmailService.sendRegistrationEmail(user.email, user.username);
 
     const token = await AuthService.generateAccessToken(user._id);
-    return res.status(201).send({ token });
+    return res.status(201).send({ token,user });
   } catch (e) {
     console.error(e);
     return res.status(400).send("Something went wrong");
@@ -127,10 +127,9 @@ app.post("/api/auth/login", async (req, res) => {
     if (!result.success) {
       return res.status(400).send(result.message);
     }
-
+    
     const token = AuthService.generateAccessToken(result.data.id);
-
-    return res.status(200).send({ token });
+    return res.status(200).send({ token,user:result?.data });
   } catch (e) {
     console.error(e);
     return res.status(400).send("Something went wrong");

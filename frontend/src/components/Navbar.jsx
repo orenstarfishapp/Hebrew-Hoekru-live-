@@ -1,21 +1,26 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Logo from "./../assets/images/logo.png";
+import { useUser } from "../context/user";
 
-const Navbar = ({ user }) => {
+const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
-
+  const navigate=useNavigate()
+  const {user,setUser}=useUser()
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser({})
+    navigate("/");
+  };
+  
   return (
     <nav className="relative mx-auto p-6 bg-[#4B5563]">
-      {/* Flex Container */}
       <div className="flex items-center justify-between mx-auto w-4/5">
-        {/* Logo */}
         <div className="flex items-center ml-12 mr-24">
           <img src={Logo} alt="" className="h-12" />
           <span className="text-white text-[30px]">Hebrew Learning</span>
         </div>
-        {/* Menu Items */}
         <div className="hidden space-x-6 lg:flex">
           <Link to="/lessons" className="text-white hover:text-darkGrayishBlue">
             Lessons
@@ -30,7 +35,11 @@ const Navbar = ({ user }) => {
             Vocabulary
           </Link>
           {user?.username ? (
-            <p style={{ color: "white", fontWeight: 900 }}>{user.username}</p>
+            <div className="flex gap-5">
+               <p style={{ color: "white", fontWeight: 900 }}>{user.username}</p>
+               <p onClick={handleLogout} className="  hover:cursor-pointer" style={{ color: "white", fontWeight: 900, }}>Logout</p>
+              </div>
+           
           ) : (
             <>
               <Link
@@ -49,7 +58,6 @@ const Navbar = ({ user }) => {
           )}
         </div>
 
-        {/* Hamburger Icon */}
         <button
           className={
             toggleMenu
@@ -64,7 +72,6 @@ const Navbar = ({ user }) => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       <div className="lg:hidden">
         <div
           className={
