@@ -128,7 +128,7 @@ app.post("/api/auth/login", async (req, res) => {
       return res.status(400).send(result.message);
     }
     
-    const token = AuthService.generateAccessToken(result.data.id);
+    const token = await AuthService.generateAccessToken(result.data.id);
     return res.status(200).send({ token,user:result?.data });
   } catch (e) {
     console.error(e);
